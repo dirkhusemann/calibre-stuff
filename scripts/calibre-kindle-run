@@ -1,0 +1,56 @@
+#!/bin/bash
+
+recipes=$HOME/.calibre/recipes
+
+function usage () {
+    echo "calibre-kindle-run newspaper-name from-email kindle-email"
+    exit 1
+}
+
+if [ -z "$1" -o -z "$2" -o -z "$3" ] ; then 
+    usage
+fi
+
+newspaper=$1
+from=$2
+kindle=$3
+shift 3
+
+now=$(date "+%F %R")
+tempdir=$(mktemp -d)
+mobi="$tempdir/$newspaper.mobi"
+recipe="$newspaper.recipe"
+
+if [ -e "$recipes/$newspaper.recipe" ] ; then
+    recipe="$recipes/$newspaper.recipe"
+fi
+
+/usr/bin/ebook-convert "$recipe" "$mobi" --output-profile=kindle $* > /dev/null 2>&1
+
+if [ -s "$mobi" ] ; then 
+    /usr/bin/calibre-smtp --attachment="$mobi" --subject="$newspaper $now" --relay=127.0.0.1 --localhost=d2h.net $from $kindle  "$newspaper $now" > /dev/null 2>&1
+
+    mail -s "[calibre-kindle-run] $newspaper fetched & pushed at $now" $from <<EOF
+hi,
+
+i just finished fetching  $newspaper, converted it to MOBI format and sent it to $kindle.
+
+    have a nice read!
+    calibre-kindle-run
+EOF
+
+else
+    mail -s "[calibre-kindle-run] $newspaper run failed at $now" $from <<EOF
+hi,
+
+i just failed to do the $newspaper run.
+
+    sorry about that!
+    calibre-kindle-run
+EOF
+
+fi
+
+rm -rf $tempdir
+
+exit 0
