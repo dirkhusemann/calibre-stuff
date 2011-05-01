@@ -1,0 +1,11 @@
+# Hey, emacs! wakeup, this is a -*- python -*- file
+
+class AdvancedUserRecipe1304179685(BasicNewsRecipe):
+    title          = u'Erlanger Nachrichten'
+    oldest_article = 2
+    max_articles_per_feed = 100
+    no_stylesheets = True
+    remove_tags    = [dict(name='div', attrs={'class':'nbStdModulRight'}),
+                      dict(id=['nbArticleFooter', 'nbColumnRight'])]
+
+    feeds          = [(u'Region Erlangen', u'http://www.nordbayern.de/cmlink/15.423?cid=2.230')]
