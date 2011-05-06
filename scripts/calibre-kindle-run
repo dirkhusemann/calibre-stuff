@@ -48,7 +48,6 @@ i just finished fetching  $newspaper, converted it to MOBI format and sent it to
     calibre-kindle-run
 EOF
 
-    done
 else
     mail -s "[calibre-kindle-run] $newspaper run failed at $now" $from <<EOF
 hi,
