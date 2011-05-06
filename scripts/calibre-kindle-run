@@ -11,10 +11,17 @@ if [ -z "$1" -o -z "$2" -o -z "$3" ] ; then
     usage
 fi
 
+# extract arguments
 newspaper=$1
 from=$2
-kindle=$3
-shift 3
+shift 2
+
+tos=""
+while [ "$1" != "--" ] ; do
+    tos="$tos $1"
+    shift 
+done
+shift
 
 now=$(date "+%F %R")
 tempdir=$(mktemp -d)
@@ -28,17 +35,20 @@ fi
 /usr/bin/ebook-convert "$recipe" "$mobi" --output-profile=kindle $* > /dev/null 2>&1
 
 if [ -s "$mobi" ] ; then 
-    /usr/bin/calibre-smtp --attachment="$mobi" --subject="$newspaper $now" --relay=127.0.0.1 --localhost=d2h.net $from $kindle  "$newspaper $now" > /dev/null 2>&1
+    for to in $tos ; do
+        /usr/bin/calibre-smtp --attachment="$mobi" --subject="$newspaper $now" --relay=127.0.0.1 --localhost=d2h.net $from $to  "$newspaper $now" > /dev/null 2>&1
+    done
 
     mail -s "[calibre-kindle-run] $newspaper fetched & pushed at $now" $from <<EOF
 hi,
 
-i just finished fetching  $newspaper, converted it to MOBI format and sent it to $kindle.
+i just finished fetching  $newspaper, converted it to MOBI format and sent it to $tos.
 
     have a nice read!
     calibre-kindle-run
 EOF
 
+    done
 else
     mail -s "[calibre-kindle-run] $newspaper run failed at $now" $from <<EOF
 hi,

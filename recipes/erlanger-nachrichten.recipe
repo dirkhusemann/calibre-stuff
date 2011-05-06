@@ -1,6 +1,6 @@
 # Hey, emacs! wakeup, this is a -*- python -*- file
 
-class AdvancedUserRecipe1304179685(BasicNewsRecipe):
+class ErlangerNachrichten(BasicNewsRecipe):
     title                 = u'Erlanger Nachrichten'
     oldest_article        = 2
     max_articles_per_feed = 100
